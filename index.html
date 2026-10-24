@@ -216,7 +216,7 @@
 </div>
 
 <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTS5gg8oBHWFkx3TZvmsW4BXNdQQbeOcDLBcYVL-N6qAx9m7ZKX7ysOjyQPEyPp1SF7np8IQ_fy2Lgg/pub?output=csv";
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTS5gg8oBHWFkx3TZvmsW4BXNdQQbeOcDLBcYVL-N6qAx9m7ZKX7ysOjyQPEyPp1SF7np8IQ_fy2Lgg/pub?gid=0&single=true&output=csv";
     
     let menuData = {
         skin: [],
@@ -234,7 +234,6 @@
         drink: null
     };
 
-    // 載入 CSV 數據
     async function loadMenu() {
         try {
             const response = await fetch(CSV_URL);
@@ -242,9 +241,9 @@
             parseCSV(data);
             document.getElementById('loadingDiv').style.display = 'none';
             document.getElementById('appContent').style.display = 'block';
-            randomizeAll(); // 預設進來先隨機抽一次
+            randomizeAll();
         } catch (error) {
-            document.getElementById('loadingDiv').innerHTML = "載入菜單失敗，請檢查網絡或 Google 試算表發布設定。";
+            document.getElementById('loadingDiv').innerHTML = "載入菜單失敗，請檢查網絡連線。";
         }
     }
 
@@ -253,23 +252,29 @@
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
-            // 簡易 CSV 解析 (支援引號)
             const row = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(item => item.replace(/^"|"$/g, '').trim());
-            const [category, name, price, calories, image, desc] = row;
             
-            const itemObj = {
-                name: name,
-                price: parseFloat(price) || 0,
-                calories: parseInt(calories) || 0,
-                image: image || '',
-                desc: desc || ''
-            };
+            // 欄位對應: Step(0), Category(1), Item Name(2), Price(3), Calories(4), Description(5)
+            const step = row[0] || '';
+            const category = row[1] || '';
+            const name = row[2] || '';
+            const price = parseFloat(row[3]) || 0;
+            const calories = parseInt(row[4]) || 0;
+            const desc = row[5] || '';
+            
+            const itemObj = { name, price, calories, desc };
 
-            if (category === '外皮') menuData.skin.push(itemObj);
-            else if (category === '蛋白質') menuData.protein.push(itemObj);
-            else if (category === '醬汁') menuData.sauce.push(itemObj);
-            else if (category === '醃菜') menuData.pickle.push(itemObj);
-            else if (category === '飲品') menuData.drink.push(itemObj);
+            if (category.includes('特色外皮') || step.includes('STEP 1')) {
+                menuData.skin.push(itemObj);
+            } else if (category.includes('蛋白質') || step.includes('STEP 2')) {
+                menuData.protein.push(itemObj);
+            } else if (category.includes('醬汁') || step.includes('STEP 3')) {
+                menuData.sauce.push(itemObj);
+            } else if (category.includes('特式醃菜') || step.includes('STEP 4')) {
+                menuData.pickle.push(itemObj);
+            } else if (category.includes('飲品') || step.includes('飲品')) {
+                menuData.drink.push(itemObj);
+            }
         }
     }
 
@@ -290,7 +295,6 @@
         randomizeStep('protein');
         randomizeStep('sauce');
         randomizeStep('pickle');
-        // 隨機選一個飲品
         if (menuData.drink.length > 0) {
             currentOrder.drink = getRandomItem(menuData.drink);
         }
@@ -303,12 +307,11 @@
     }
 
     function updateDisplay() {
-        // 更新外皮
+        // 外皮
         const skinDiv = document.getElementById('skinDisplay');
         if (currentOrder.skin) {
             skinDiv.innerHTML = `
                 <div class="skin-preview">
-                    ${currentOrder.skin.image ? `<img src="${currentOrder.skin.image}" class="skin-img" alt="外皮圖片">` : ''}
                     <div>
                         <div class="selected-item">${currentOrder.skin.name} ($${currentOrder.skin.price})</div>
                         <div class="item-meta">${currentOrder.skin.desc} | ${currentOrder.skin.calories} kcal</div>
@@ -317,7 +320,7 @@
             `;
         }
 
-        // 更新蛋白質
+        // 蛋白質
         const proteinDiv = document.getElementById('proteinDisplay');
         if (currentOrder.protein) {
             proteinDiv.innerHTML = `
@@ -326,7 +329,7 @@
             `;
         }
 
-        // 更新醬汁
+        // 醬汁
         const sauceDiv = document.getElementById('sauceDisplay');
         if (currentOrder.sauce) {
             sauceDiv.innerHTML = `
@@ -335,7 +338,7 @@
             `;
         }
 
-        // 更新醃菜
+        // 醃菜
         const pickleDiv = document.getElementById('pickleDisplay');
         if (currentOrder.pickle) {
             pickleDiv.innerHTML = `
@@ -344,7 +347,7 @@
             `;
         }
 
-        // 更新飲品 (剔選框)
+        // 飲品 (Checkbox)
         const drinkDiv = document.getElementById('drinkDisplay');
         drinkDiv.innerHTML = '';
         menuData.drink.forEach(drink => {
@@ -375,7 +378,6 @@
         document.getElementById('totalCalories').innerText = `總卡路里: ${totalCalories} kcal`;
     }
 
-    // 頁面載入時執行
     window.onload = loadMenu;
 </script>
 
