@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EASY GO, EASY EAT! 隨機點餐系統</title>
+    <style>
+        :root {
+            --primary-color: #d35400;
+            --accent-color: #f39c12;
+            --bg-color: #fdfcf7;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .step-card {
+            background: #faf9f5;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .step-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+        }
+        .btn-sm {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-sm:active { background-color: #d35400; }
+        
+        .selected-item {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .item-meta {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 2px;
+        }
+        /* 特色外皮圖片樣式 */
+        .skin-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .skin-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+        
+        /* 飲品剔選清單 */
+        .drink-options {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 5px;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* 總結區塊 */
+        .summary-box {
+            background: #fff8f0;
+            border: 2px dashed var(--accent-color);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .summary-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #c0392b;
+            margin: 5px 0;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-primary:active { background-color: #b94000; }
+        .loading {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>EASY GO, EASY EAT!</h1>
+    <div class="subtitle">隨機拼湊您的專屬健康餐點</div>
+
+    <div id="loadingDiv" class="loading">正在同步最新菜單資料...</div>
+    
+    <div id="appContent" style="display: none;">
+        <!-- STEP 1 -->
+        <div class="step-card">
+            <div class="step-header">
+                <span class="step-title">STEP 1: 選擇特色外皮</span>
+                <button class="btn-sm" onclick="randomizeStep('skin')">重抽外皮</button>
+            </div>
+            <div id="skinDisplay"></div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-card">
+            <div class="step-header">
+                <span class="step-title">STEP 2: 選擇蛋白質</span>
+                <button class="btn-sm" onclick="randomizeStep('protein')">重抽蛋白質</button>
+            </div>
+            <div id="proteinDisplay"></div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step-card">
+            <div class="step-header">
+                <span class="step-title">STEP 3: 選擇醬汁</span>
+                <button class="btn-sm" onclick="randomizeStep('sauce')">重抽醬汁</button>
+            </div>
+            <div id="sauceDisplay"></div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step-card">
+            <div class="step-header">
+                <span class="step-title">STEP 4: 選擇特式醃菜</span>
+                <button class="btn-sm" onclick="randomizeStep('pickle')">重抽醃菜</button>
+            </div>
+            <div id="pickleDisplay"></div>
+        </div>
+
+        <!-- DRINK (Checkbox) -->
+        <div class="step-card">
+            <div class="step-header">
+                <span class="step-title">套餐附送飲品 (必選一款)</span>
+            </div>
+            <div id="drinkDisplay" class="drink-options"></div>
+        </div>
+
+        <button class="btn-primary" onclick="randomizeAll()">🎲 一鍵隨機抽四款餐點</button>
+
+        <!-- 總結 -->
+        <div class="summary-box">
+            <div style="font-size: 0.9rem; font-weight: bold;">餐點總結</div>
+            <div class="summary-total" id="totalPrice">總價錢: $0</div>
+            <div class="item-meta" id="totalCalories">總卡路里: 0 kcal</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTS5gg8oBHWFkx3TZvmsW4BXNdQQbeOcDLBcYVL-N6qAx9m7ZKX7ysOjyQPEyPp1SF7np8IQ_fy2Lgg/pub?output=csv";
+    
+    let menuData = {
+        skin: [],
+        protein: [],
+        sauce: [],
+        pickle: [],
+        drink: []
+    };
+
+    let currentOrder = {
+        skin: null,
+        protein: null,
+        sauce: null,
+        pickle: null,
+        drink: null
+    };
+
+    // 載入 CSV 數據
+    async function loadMenu() {
+        try {
+            const response = await fetch(CSV_URL);
+            const data = await response.text();
+            parseCSV(data);
+            document.getElementById('loadingDiv').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+            randomizeAll(); // 預設進來先隨機抽一次
+        } catch (error) {
+            document.getElementById('loadingDiv').innerHTML = "載入菜單失敗，請檢查網絡或 Google 試算表發布設定。";
+        }
+    }
+
+    function parseCSV(text) {
+        const lines = text.split('\n');
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            // 簡易 CSV 解析 (支援引號)
+            const row = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(item => item.replace(/^"|"$/g, '').trim());
+            const [category, name, price, calories, image, desc] = row;
+            
+            const itemObj = {
+                name: name,
+                price: parseFloat(price) || 0,
+                calories: parseInt(calories) || 0,
+                image: image || '',
+                desc: desc || ''
+            };
+
+            if (category === '外皮') menuData.skin.push(itemObj);
+            else if (category === '蛋白質') menuData.protein.push(itemObj);
+            else if (category === '醬汁') menuData.sauce.push(itemObj);
+            else if (category === '醃菜') menuData.pickle.push(itemObj);
+            else if (category === '飲品') menuData.drink.push(itemObj);
+        }
+    }
+
+    function getRandomItem(arr) {
+        if (!arr || arr.length === 0) return null;
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function randomizeStep(category) {
+        if (menuData[category].length > 0) {
+            currentOrder[category] = getRandomItem(menuData[category]);
+            updateDisplay();
+        }
+    }
+
+    function randomizeAll() {
+        randomizeStep('skin');
+        randomizeStep('protein');
+        randomizeStep('sauce');
+        randomizeStep('pickle');
+        // 隨機選一個飲品
+        if (menuData.drink.length > 0) {
+            currentOrder.drink = getRandomItem(menuData.drink);
+        }
+        updateDisplay();
+    }
+
+    function selectDrink(drinkName) {
+        currentOrder.drink = menuData.drink.find(d => d.name === drinkName) || null;
+        updateSummary();
+    }
+
+    function updateDisplay() {
+        // 更新外皮
+        const skinDiv = document.getElementById('skinDisplay');
+        if (currentOrder.skin) {
+            skinDiv.innerHTML = `
+                <div class="skin-preview">
+                    ${currentOrder.skin.image ? `<img src="${currentOrder.skin.image}" class="skin-img" alt="外皮圖片">` : ''}
+                    <div>
+                        <div class="selected-item">${currentOrder.skin.name} ($${currentOrder.skin.price})</div>
+                        <div class="item-meta">${currentOrder.skin.desc} | ${currentOrder.skin.calories} kcal</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 更新蛋白質
+        const proteinDiv = document.getElementById('proteinDisplay');
+        if (currentOrder.protein) {
+            proteinDiv.innerHTML = `
+                <div class="selected-item">${currentOrder.protein.name} ${currentOrder.protein.price > 0 ? `(+$${currentOrder.protein.price})` : ''}</div>
+                <div class="item-meta">${currentOrder.protein.calories} kcal</div>
+            `;
+        }
+
+        // 更新醬汁
+        const sauceDiv = document.getElementById('sauceDisplay');
+        if (currentOrder.sauce) {
+            sauceDiv.innerHTML = `
+                <div class="selected-item">${currentOrder.sauce.name}</div>
+                <div class="item-meta">${currentOrder.sauce.calories} kcal</div>
+            `;
+        }
+
+        // 更新醃菜
+        const pickleDiv = document.getElementById('pickleDisplay');
+        if (currentOrder.pickle) {
+            pickleDiv.innerHTML = `
+                <div class="selected-item">${currentOrder.pickle.name}</div>
+                <div class="item-meta">${currentOrder.pickle.calories} kcal</div>
+            `;
+        }
+
+        // 更新飲品 (剔選框)
+        const drinkDiv = document.getElementById('drinkDisplay');
+        drinkDiv.innerHTML = '';
+        menuData.drink.forEach(drink => {
+            const isChecked = currentOrder.drink && currentOrder.drink.name === drink.name;
+            drinkDiv.innerHTML += `
+                <label class="checkbox-label">
+                    <input type="radio" name="drinkRadio" value="${drink.name}" ${isChecked ? 'checked' : ''} onclick="selectDrink('${drink.name}')">
+                    <span>${drink.name} (${drink.calories} kcal)</span>
+                </label>
+            `;
+        });
+
+        updateSummary();
+    }
+
+    function updateSummary() {
+        let totalPrice = 0;
+        let totalCalories = 0;
+
+        ['skin', 'protein', 'sauce', 'pickle', 'drink'].forEach(cat => {
+            if (currentOrder[cat]) {
+                totalPrice += currentOrder[cat].price || 0;
+                totalCalories += currentOrder[cat].calories || 0;
+            }
+        });
+
+        document.getElementById('totalPrice').innerText = `總價錢: $${totalPrice}`;
+        document.getElementById('totalCalories').innerText = `總卡路里: ${totalCalories} kcal`;
+    }
+
+    // 頁面載入時執行
+    window.onload = loadMenu;
+</script>
+
+</body>
+</html>
