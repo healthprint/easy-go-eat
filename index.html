@@ -51,7 +51,7 @@
       color: white;
       padding: 6px 12px;
       border-radius: 18px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: bold;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       text-align: right;
@@ -216,6 +216,7 @@
     <div class="stats-badge">
       <div>💰 <span id="total-price">0</span> 元</div>
       <div>🔥 <span id="total-cal">0</span> kcal</div>
+      <div>💪 <span id="total-protein">0</span> g 蛋白質</div>
     </div>
   </header>
 
@@ -264,7 +265,7 @@
     </div>
   </div>
 
-  <!-- 飲品剔選區 (不計算卡路里) -->
+  <!-- 飲品剔選區 (不計算卡路里及蛋白質) -->
   <div class="drink-section">
     <div class="drink-title">🥤 加購飲品（勾選後計入總價）</div>
     <div class="drink-options" id="drink-container">
@@ -311,7 +312,8 @@
           const item = {
             name: cols[1],
             price: parseFloat(cols[2]) || 0,
-            cal: parseFloat(cols[3]) || 0
+            cal: parseFloat(cols[3]) || 0,
+            protein: parseFloat(cols[4]) || 0  // 讀取第5欄：Proteins 蛋白質
           };
 
           if (categoryName.includes('三文治') || categoryName.includes('薯卷')) {
@@ -350,7 +352,7 @@
     function getRandomItem(catIndex) {
       const list = menuCategories[catIndex];
       if (!list || list.length === 0) {
-        return { name: '該分類無資料', price: 0, cal: 0 };
+        return { name: '該分類無資料', price: 0, cal: 0, protein: 0 };
       }
       return list[Math.floor(Math.random() * list.length)];
     }
@@ -378,7 +380,8 @@
       if (!item) return;
 
       document.getElementById(`val-${index}`).innerText = item.name;
-      document.getElementById(`meta-${index}`).innerText = `💰 $${item.price} | 🔥 ${item.cal} kcal`;
+      // 逐樣顯示金額、卡路里、蛋白質
+      document.getElementById(`meta-${index}`).innerText = `💰 $${item.price} | 🔥 ${item.cal} kcal | 💪 ${item.protein}g`;
 
       if (index === 0) {
         const imgEl = document.getElementById('item1-img');
@@ -397,11 +400,13 @@
     function updateTotals() {
       let totalPrice = 0;
       let totalCal = 0;
+      let totalProtein = 0;
 
       selectedItems.forEach(item => {
         if (item) {
           totalPrice += item.price;
           totalCal += item.cal;
+          totalProtein += item.protein;
         }
       });
 
@@ -414,8 +419,10 @@
         }
       });
 
-      document.getElementById('total-price').innerText = totalPrice;
-      document.getElementById('total-cal').innerText = totalCal;
+      // 數字四捨五入至小數點後 1 位，避免浮點數運算誤差
+      document.getElementById('total-price').innerText = Math.round(totalPrice * 10) / 10;
+      document.getElementById('total-cal').innerText = Math.round(totalCal * 10) / 10;
+      document.getElementById('total-protein').innerText = Math.round(totalProtein * 10) / 10;
     }
 
     window.onload = loadData;
