@@ -26,24 +26,21 @@
       color: var(--text);
       display: flex;
       flex-direction: column;
-      height: 100vh;
       max-width: 480px;
       margin: 0 auto;
-      padding: 12px;
-      position: relative;
-      overflow-x: hidden;
+      padding: 10px;
+      min-height: 100vh;
     }
 
-    /* 頂部標題與右上角統計 */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     h1 {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #D84315;
       font-weight: 800;
     }
@@ -51,28 +48,26 @@
     .stats-badge {
       background: linear-gradient(135deg, #FF9800, #F44336);
       color: white;
-      padding: 6px 10px;
-      border-radius: 20px;
-      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 16px;
+      font-size: 0.75rem;
       font-weight: bold;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
       text-align: right;
       line-height: 1.2;
     }
 
-    /* 主按鈕：一鍵抽取 */
     .action-btn-main {
       background: linear-gradient(135deg, #FF4081, #FF5722);
       color: white;
       border: none;
-      padding: 10px;
-      border-radius: 12px;
-      font-size: 1.05rem;
+      padding: 8px;
+      border-radius: 10px;
+      font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(255, 87, 34, 0.4);
-      transition: transform 0.1s, box-shadow 0.1s;
-      margin-bottom: 8px;
+      box-shadow: 0 3px 8px rgba(255, 87, 34, 0.4);
+      margin-bottom: 6px;
       text-align: center;
     }
 
@@ -80,23 +75,22 @@
       transform: scale(0.98);
     }
 
-    /* 卡片容器 (4個項目) */
     .slots-container {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      flex: 1;
+      gap: 5px;
+      margin-bottom: 6px;
     }
 
     .slot-card {
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 8px 12px;
+      border-radius: 10px;
+      padding: 6px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      border-left: 5px solid var(--primary);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-left: 4px solid var(--primary);
     }
 
     .slot-card:nth-child(1) { border-color: #FF5722; }
@@ -106,44 +100,44 @@
 
     .slot-info {
       flex: 1;
-      padding-right: 8px;
+      padding-right: 6px;
     }
 
     .slot-title {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: #777;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
 
     .slot-value {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: bold;
       color: #222;
     }
 
     .slot-meta {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: #888;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
-    /* 第一行專用圖片區塊 */
+    /* 用家自定義圖片區塊 */
     .food-img {
-      width: 45px;
-      height: 45px;
+      width: 40px;
+      height: 40px;
       object-fit: cover;
-      border-radius: 8px;
-      margin-right: 8px;
+      border-radius: 6px;
+      margin-right: 6px;
       display: none;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .redraw-btn {
       background-color: #F0F0F0;
       border: none;
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 0.75rem;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 0.7rem;
       font-weight: bold;
       color: #555;
       cursor: pointer;
@@ -153,7 +147,37 @@
       background-color: #E0E0E0;
     }
 
-    /* 載入中遮罩 */
+    /* 額外飲品勾選區塊 */
+    .drink-section {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 8px 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-left: 4px solid #00BCD4;
+      margin-bottom: 6px;
+    }
+
+    .drink-title {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #00838F;
+      margin-bottom: 4px;
+    }
+
+    .drink-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.75rem;
+    }
+
+    .drink-options label {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+    }
+
     #loading {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -167,14 +191,13 @@
       z-index: 10;
     }
 
-    /* 動畫效果 */
     .shake {
-      animation: pop 0.25s ease-in-out;
+      animation: pop 0.2s ease-in-out;
     }
 
     @keyframes pop {
       0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
+      50% { transform: scale(1.02); }
       100% { transform: scale(1); }
     }
   </style>
@@ -191,44 +214,44 @@
     </div>
   </header>
 
-  <button class="action-btn-main" onclick="drawAll()">✨ 一鍵抽選四項餐點 ✨</button>
+  <button class="action-btn-main" onclick="drawAll()">✨ 一鍵隨機抽選四款 ✨</button>
 
   <div class="slots-container">
-    <!-- 項目 1: 特色三文治 / 薯卷 -->
+    <!-- 項目 1: 特色三文治/薯卷 -->
     <div class="slot-card" id="card-0">
       <img id="item1-img" class="food-img" src="" alt="餐點圖片">
       <div class="slot-info">
-        <div class="slot-title">主食 (三文治 / 薯卷)</div>
+        <div class="slot-title">1. 特色三文治 / 薯卷</div>
         <div class="slot-value" id="val-0">未抽取</div>
         <div class="slot-meta" id="meta-0">-</div>
       </div>
       <button class="redraw-btn" onclick="drawSingle(0)">🔄 重抽</button>
     </div>
 
-    <!-- 項目 2 -->
+    <!-- 項目 2: 蛋白質 -->
     <div class="slot-card" id="card-1">
       <div class="slot-info">
-        <div class="slot-title">項目二</div>
+        <div class="slot-title">2. 蛋白質</div>
         <div class="slot-value" id="val-1">未抽取</div>
         <div class="slot-meta" id="meta-1">-</div>
       </div>
       <button class="redraw-btn" onclick="drawSingle(1)">🔄 重抽</button>
     </div>
 
-    <!-- 項目 3 -->
+    <!-- 項目 3: 醬汁 -->
     <div class="slot-card" id="card-2">
       <div class="slot-info">
-        <div class="slot-title">項目三</div>
+        <div class="slot-title">3. 醬汁</div>
         <div class="slot-value" id="val-2">未抽取</div>
         <div class="slot-meta" id="meta-2">-</div>
       </div>
       <button class="redraw-btn" onclick="drawSingle(2)">🔄 重抽</button>
     </div>
 
-    <!-- 項目 4 -->
+    <!-- 項目 4: 特色醃菜 -->
     <div class="slot-card" id="card-3">
       <div class="slot-info">
-        <div class="slot-title">小食 / 飲品</div>
+        <div class="slot-title">4. 特色醃菜</div>
         <div class="slot-value" id="val-3">未抽取</div>
         <div class="slot-meta" id="meta-3">-</div>
       </div>
@@ -236,57 +259,86 @@
     </div>
   </div>
 
+  <!-- 飲品剔選區 (不計算卡路里) -->
+  <div class="drink-section">
+    <div class="drink-title">🥤 加購飲品（勾選後計入總價）</div>
+    <div class="drink-options" id="drink-container">
+      <!-- 動態載入飲品選項 -->
+    </div>
+  </div>
+
   <script>
-    // 你的 Google 試算表 CSV 發布地址
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTS5gg8oBHWFkx3TZvmsW4BXNdQQbeOcDLBcYVL-N6qAx9m7ZKX7ysOjyQPEyPp1SF7np8IQ_fy2Lgg/pub?output=csv';
 
-    // 示範圖片 URL (可自由更換)
-    const SANDWICH_IMG = 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=150&auto=format&fit=crop&q=80';
-    const POTATO_ROLL_IMG = 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=150&auto=format&fit=crop&q=80';
+    // 🖼️【你可以在這裡自訂你的圖片網址或檔案路徑】
+    const IMAGE_CONFIG = {
+      sandwich: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=150&auto=format&fit=crop&q=80', // 三文治圖片
+      potatoRoll: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=150&auto=format&fit=crop&q=80' // 薯卷圖片
+    };
 
-    let menuCategories = [[], [], [], []];
+    let menuCategories = [[], [], [], []]; // 0:三文治/薯卷, 1:蛋白質, 2:醬汁, 3:醃菜
+    let drinksList = []; // 飲品清單
     let selectedItems = [null, null, null, null];
 
-    // 初始化：載入 Google 試算表 CSV
     async function loadData() {
       try {
         const response = await fetch(SHEET_CSV_URL);
         const data = await response.text();
         parseCSV(data);
         document.getElementById('loading').style.display = 'none';
-        drawAll(); // 預設進來自動抽一次
+        drawAll(); 
       } catch (error) {
         console.error('Data load error:', error);
         document.getElementById('loading').innerText = '❌ 載入失敗，請檢查試算表權限';
       }
     }
 
-    // 簡單 CSV 解析器
     function parseCSV(csvText) {
       const lines = csvText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       if (lines.length < 2) return;
 
       menuCategories = [[], [], [], []];
+      drinksList = [];
 
-      // 假設 CSV 格式：分類 (0-3), 名稱, 價錢, 卡路里
-      // 依據表格每行資料分類
       for (let i = 1; i < lines.length; i++) {
         const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
         if (cols.length >= 4) {
-          const catIndex = parseInt(cols[0]) || 0; // 第一欄：0, 1, 2, 3 代表 4 個項目類別
+          const catIndex = parseInt(cols[0]); 
           const item = {
             name: cols[1],
             price: parseFloat(cols[2]) || 0,
             cal: parseFloat(cols[3]) || 0
           };
-          if (catIndex >= 0 && catIndex < 4) {
+
+          if (catIndex >= 0 && catIndex <= 3) {
             menuCategories[catIndex].push(item);
+          } else if (catIndex === 4) {
+            // 分類 4 代表飲品
+            drinksList.push(item);
           }
         }
       }
+      renderDrinks();
     }
 
-    // 隨機抽取某個分類
+    // 渲染飲品剔選框
+    function renderDrinks() {
+      const container = document.getElementById('drink-container');
+      container.innerHTML = '';
+      if (drinksList.length === 0) {
+        container.innerHTML = '<span style="color:#888;">暫無飲品選項</span>';
+        return;
+      }
+      drinksList.forEach((drink, index) => {
+        const label = document.createElement('label');
+        label.innerHTML = `
+          <input type="checkbox" value="${index}" onchange="updateTotals()">
+          ${drink.name} (+$${drink.price})
+        `;
+        container.appendChild(label);
+      });
+    }
+
     function getRandomItem(catIndex) {
       const list = menuCategories[catIndex];
       if (!list || list.length === 0) {
@@ -295,28 +347,24 @@
       return list[Math.floor(Math.random() * list.length)];
     }
 
-    // 單項抽取
     function drawSingle(index) {
       const item = getRandomItem(index);
       selectedItems[index] = item;
       updateUI(index);
       updateTotals();
 
-      // 卡片動畫
       const card = document.getElementById(`card-${index}`);
       card.classList.remove('shake');
-      void card.offsetWidth; // trigger reflow
+      void card.offsetWidth; 
       card.classList.add('shake');
     }
 
-    // 一鍵全抽
     function drawAll() {
       for (let i = 0; i < 4; i++) {
         drawSingle(i);
       }
     }
 
-    // 更新介面內容
     function updateUI(index) {
       const item = selectedItems[index];
       if (!item) return;
@@ -324,30 +372,40 @@
       document.getElementById(`val-${index}`).innerText = item.name;
       document.getElementById(`meta-${index}`).innerText = `💰 $${item.price} | 🔥 ${item.cal} kcal`;
 
-      // 特殊邏輯：第一行根據名稱顯示三文治或薯卷圖片
+      // 第一行特色三文治/薯卷圖片判斷與顯示
       if (index === 0) {
         const imgEl = document.getElementById('item1-img');
-        if (item.name.includes('三文治') || item.name.includes('Sandwich')) {
-          imgEl.src = SANDWICH_IMG;
+        if (item.name.includes('三文治') || item.name.toLowerCase().includes('sandwich')) {
+          imgEl.src = IMAGE_CONFIG.sandwich;
           imgEl.style.display = 'block';
-        } else if (item.name.includes('薯卷') || item.name.includes('Roll')) {
-          imgEl.src = POTATO_ROLL_IMG;
+        } else if (item.name.includes('薯卷') || item.name.toLowerCase().includes('roll')) {
+          imgEl.src = IMAGE_CONFIG.potatoRoll;
           imgEl.style.display = 'block';
         } else {
-          imgEl.style.display = 'none'; // 若不是這兩者則隱藏圖片
+          imgEl.style.display = 'none'; // 若不是這兩者則隱藏
         }
       }
     }
 
-    // 更新右上角總價錢與總卡路里
     function updateTotals() {
       let totalPrice = 0;
       let totalCal = 0;
 
+      // 計算抽中的 4 項
       selectedItems.forEach(item => {
         if (item) {
           totalPrice += item.price;
-          totalCal += item.cal;
+          totalCal += item.cal; // 只有這四項計算卡路里
+        }
+      });
+
+      // 計算勾選的飲品（飲品不計算卡路里）
+      const checkboxes = document.querySelectorAll('.drink-options input[type="checkbox"]:checked');
+      checkboxes.forEach(chk => {
+        const drinkIndex = parseInt(chk.value);
+        const drink = drinksList[drinkIndex];
+        if (drink) {
+          totalPrice += drink.price;
         }
       });
 
@@ -355,7 +413,6 @@
       document.getElementById('total-cal').innerText = totalCal;
     }
 
-    // 啟動
     window.onload = loadData;
   </script>
 </body>
