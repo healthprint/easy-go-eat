@@ -1,453 +1,362 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EASY GO, EASY EAT! 自助點餐</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #FF6B35;
-            --secondary: #F7C59F;
-            --accent: #2E4057;
-            --bg-color: #FFF9F5;
-            --card-bg: #FFFFFF;
-            --text-main: #2D3142;
-            --shadow: 0 10px 30px rgba(255, 107, 53, 0.12);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>今日食乜好？美食抽籤器</title>
+  <style>
+    :root {
+      --primary: #FF5722;
+      --secondary: #FFC107;
+      --accent: #E91E63;
+      --bg: #FFF8E1;
+      --card-bg: #FFFFFF;
+      --text: #333333;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 20px;
-            min-height: 100vh;
-        }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 12px;
+      position: relative;
+      overflow-x: hidden;
+    }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            padding-bottom: 80px;
-        }
+    /* 頂部標題與右上角統計 */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
 
-        /* 標題樣式 */
-        header {
-            text-align: center;
-            margin-bottom: 35px;
-            padding-top: 15px;
-        }
+    h1 {
+      font-size: 1.2rem;
+      color: #D84315;
+      font-weight: 800;
+    }
 
-        header h1 {
-            font-size: 2.8rem;
-            color: var(--primary);
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 0px var(--secondary);
-        }
+    .stats-badge {
+      background: linear-gradient(135deg, #FF9800, #F44336);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+      text-align: right;
+      line-height: 1.2;
+    }
 
-        /* 右上角懸浮餐點總結 */
-        .order-summary-float {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 3px solid var(--primary);
-            border-radius: 16px;
-            padding: 15px 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            z-index: 1000;
-            max-width: 280px;
-            width: 100%;
-        }
+    /* 主按鈕：一鍵抽取 */
+    .action-btn-main {
+      background: linear-gradient(135deg, #FF4081, #FF5722);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255, 87, 34, 0.4);
+      transition: transform 0.1s, box-shadow 0.1s;
+      margin-bottom: 8px;
+      text-align: center;
+    }
 
-        .order-summary-float h3 {
-            font-size: 1rem;
-            color: var(--accent);
-            margin-bottom: 8px;
-            border-bottom: 2px dashed var(--secondary);
-            padding-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .action-btn-main:active {
+      transform: scale(0.98);
+    }
 
-        .summary-items {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 8px;
-            max-height: 100px;
-            overflow-y: auto;
-        }
+    /* 卡片容器 (4個項目) */
+    .slots-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
 
-        .summary-items div {
-            margin-bottom: 3px;
-        }
+    .slot-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border-left: 5px solid var(--primary);
+    }
 
-        .summary-total {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.1rem;
-            text-align: right;
-        }
+    .slot-card:nth-child(1) { border-color: #FF5722; }
+    .slot-card:nth-child(2) { border-color: #2196F3; }
+    .slot-card:nth-child(3) { border-color: #4CAF50; }
+    .slot-card:nth-child(4) { border-color: #9C27B0; }
 
-        /* 步驟區塊樣式 */
-        .step-section {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow);
-            border: 2px solid rgba(247, 197, 159, 0.4);
-            transition: transform 0.3s ease;
-        }
+    .slot-info {
+      flex: 1;
+      padding-right: 8px;
+    }
 
-        .step-section:hover {
-            transform: translateY(-3px);
-        }
+    .slot-title {
+      font-size: 0.75rem;
+      color: #777;
+      margin-bottom: 2px;
+    }
 
-        .step-title {
-            font-size: 1.3rem;
-            color: var(--accent);
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .slot-value {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #222;
+    }
 
-        .step-title span {
-            background: var(--primary);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
+    .slot-meta {
+      font-size: 0.7rem;
+      color: #888;
+      margin-top: 2px;
+    }
 
-        /* 卡片選擇網格 (STEP 1) */
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-        }
+    /* 第一行專用圖片區塊 */
+    .food-img {
+      width: 45px;
+      height: 45px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 8px;
+      display: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
-        .option-card {
-            background: #fff;
-            border: 2px solid #eee;
-            border-radius: 16px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+    .redraw-btn {
+      background-color: #F0F0F0;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #555;
+      cursor: pointer;
+    }
 
-        .option-card img {
-            width: 140px;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-            border: 3px solid var(--secondary);
-        }
+    .redraw-btn:active {
+      background-color: #E0E0E0;
+    }
 
-        .option-card h4 {
-            font-size: 1.1rem;
-            color: var(--text-main);
-            margin-bottom: 8px;
-        }
+    /* 載入中遮罩 */
+    #loading {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,248,225,0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: var(--primary);
+      z-index: 10;
+    }
 
-        .option-card .price {
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.15rem;
-        }
+    /* 動畫效果 */
+    .shake {
+      animation: pop 0.25s ease-in-out;
+    }
 
-        .option-card.selected {
-            border-color: var(--primary);
-            background-color: #FFF4EE;
-            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.2);
-        }
-
-        .option-card.selected::after {
-            content: '✓';
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--primary);
-            color: white;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        /* 項目列表 (步驟 2, 3, 4 及飲品) */
-        .list-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-        }
-
-        .list-item {
-            background: #FAFAFA;
-            border: 2px solid #EAEAEA;
-            padding: 12px 18px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-            font-size: 0.95rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .list-item:hover {
-            border-color: var(--secondary);
-            background: #FFF;
-        }
-
-        .list-item.selected {
-            background: #FFF4EE;
-            border-color: var(--primary);
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        /* 提交訂單按鈕 */
-        .submit-container {
-            text-align: center;
-            margin-top: 40px;
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, var(--primary), #FF8E53);
-            color: white;
-            border: none;
-            padding: 16px 50px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.4);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 30px rgba(255, 107, 53, 0.5);
-        }
-
-        @media (max-width: 768px) {
-            .order-summary-float {
-                position: static;
-                max-width: 100%;
-                margin-bottom: 25px;
-            }
-            header h1 {
-                font-size: 2.2rem;
-            }
-        }
-    </style>
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- 右上角懸浮餐點總結 -->
-        <div class="order-summary-float">
-            <h3><span>🛒 餐點總結</span> <span id="total-price">$0</span></h3>
-            <div class="summary-items" id="summary-items-list">
-                <div>正在載入試算表餐牌...</div>
-            </div>
-        </div>
+  <div id="loading">🚀 載入菜單數據中...</div>
 
-        <header>
-            <h1>EASY GO, EASY EAT!</h1>
-            <p style="color: var(--accent); margin-top: 5px; font-weight: 500;">打造你的專屬健康輕食</p>
-        </header>
+  <header>
+    <h1>🎲 今日餐點抽選</h1>
+    <div class="stats-badge">
+      <div>💰 <span id="total-price">0</span> 元</div>
+      <div>🔥 <span id="total-cal">0</span> kcal</div>
+    </div>
+  </header>
 
-        <!-- STEP 1 -->
-        <div class="step-section">
-            <div class="step-title"><span>STEP 1</span> 選擇特色外層 (Base)</div>
-            <div class="options-grid" id="base-container">
-                <!-- 由試算表動態載入 -->
-            </div>
-        </div>
+  <button class="action-btn-main" onclick="drawAll()">✨ 一鍵抽選四項餐點 ✨</button>
 
-        <!-- STEP 2 -->
-        <div class="step-section">
-            <div class="step-title"><span>STEP 2</span> 選擇蛋白質</div>
-            <div class="list-options" id="protein-container">
-                <!-- 由試算表動態載入 -->
-            </div>
-        </div>
-
-        <!-- STEP 3 -->
-        <div class="step-section">
-            <div class="step-title"><span>STEP 3</span> 選擇醬汁</div>
-            <div class="list-options" id="sauce-container">
-                <!-- 由試算表動態載入 -->
-            </div>
-        </div>
-
-        <!-- STEP 4 -->
-        <div class="step-section">
-            <div class="step-title"><span>STEP 4</span> 選擇特式醃菜</div>
-            <div class="list-options" id="pickle-container">
-                <!-- 由試算表動態載入 -->
-            </div>
-        </div>
-
-        <!-- 套餐飲品 -->
-        <div class="step-section">
-            <div class="step-title"><span>DRINK</span> 套餐奉送以下飲品</div>
-            <div class="list-options" id="drink-container">
-                <!-- 由試算表動態載入 -->
-            </div>
-        </div>
-
-        <!-- 提交按鈕 -->
-        <div class="submit-container">
-            <button class="btn-submit" onclick="submitOrder()">確認送出訂單</button>
-        </div>
+  <div class="slots-container">
+    <!-- 項目 1: 特色三文治 / 薯卷 -->
+    <div class="slot-card" id="card-0">
+      <img id="item1-img" class="food-img" src="" alt="餐點圖片">
+      <div class="slot-info">
+        <div class="slot-title">主食 (三文治 / 薯卷)</div>
+        <div class="slot-value" id="val-0">未抽取</div>
+        <div class="slot-meta" id="meta-0">-</div>
+      </div>
+      <button class="redraw-btn" onclick="drawSingle(0)">🔄 重抽</button>
     </div>
 
-    <script>
-        // 你的 Google 試算表 CSV 發佈連結
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTS5gg8oBHWFkx3TZvmsW4BXNdQQbeOcDLBcYVL-N6qAx9m7ZKX7ysOjyQPEyPp1SF7np8IQ_fy2Lgg/pub?output=csv';
+    <!-- 項目 2 -->
+    <div class="slot-card" id="card-1">
+      <div class="slot-info">
+        <div class="slot-title">項目二</div>
+        <div class="slot-value" id="val-1">未抽取</div>
+        <div class="slot-meta" id="meta-1">-</div>
+      </div>
+      <button class="redraw-btn" onclick="drawSingle(1)">🔄 重抽</button>
+    </div>
 
-        let currentOrder = {
-            base: null,
-            price: 0,
-            protein: null,
-            sauce: null,
-            pickle: null,
-            drink: null
-        };
+    <!-- 項目 3 -->
+    <div class="slot-card" id="card-2">
+      <div class="slot-info">
+        <div class="slot-title">項目三</div>
+        <div class="slot-value" id="val-2">未抽取</div>
+        <div class="slot-meta" id="meta-2">-</div>
+      </div>
+      <button class="redraw-btn" onclick="drawSingle(2)">🔄 重抽</button>
+    </div>
 
-        // 簡單解析 CSV 格式的函數
-        function parseCSV(text) {
-            let lines = text.split('\n');
-            let result = [];
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                let row = lines[i].split(',').map(item => item.trim().replace(/^["']|["']$/g, ''));
-                result.push(row);
-            }
-            return result;
+    <!-- 項目 4 -->
+    <div class="slot-card" id="card-3">
+      <div class="slot-info">
+        <div class="slot-title">小食 / 飲品</div>
+        <div class="slot-value" id="val-3">未抽取</div>
+        <div class="slot-meta" id="meta-3">-</div>
+      </div>
+      <button class="redraw-btn" onclick="drawSingle(3)">🔄 重抽</button>
+    </div>
+  </div>
+
+  <script>
+    // 你的 Google 試算表 CSV 發布地址
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTS5gg8oBHWFkx3TZvmsW4BXNdQQbeOcDLBcYVL-N6qAx9m7ZKX7ysOjyQPEyPp1SF7np8IQ_fy2Lgg/pub?output=csv';
+
+    // 示範圖片 URL (可自由更換)
+    const SANDWICH_IMG = 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=150&auto=format&fit=crop&q=80';
+    const POTATO_ROLL_IMG = 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=150&auto=format&fit=crop&q=80';
+
+    let menuCategories = [[], [], [], []];
+    let selectedItems = [null, null, null, null];
+
+    // 初始化：載入 Google 試算表 CSV
+    async function loadData() {
+      try {
+        const response = await fetch(SHEET_CSV_URL);
+        const data = await response.text();
+        parseCSV(data);
+        document.getElementById('loading').style.display = 'none';
+        drawAll(); // 預設進來自動抽一次
+      } catch (error) {
+        console.error('Data load error:', error);
+        document.getElementById('loading').innerText = '❌ 載入失敗，請檢查試算表權限';
+      }
+    }
+
+    // 簡單 CSV 解析器
+    function parseCSV(csvText) {
+      const lines = csvText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 2) return;
+
+      menuCategories = [[], [], [], []];
+
+      // 假設 CSV 格式：分類 (0-3), 名稱, 價錢, 卡路里
+      // 依據表格每行資料分類
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
+        if (cols.length >= 4) {
+          const catIndex = parseInt(cols[0]) || 0; // 第一欄：0, 1, 2, 3 代表 4 個項目類別
+          const item = {
+            name: cols[1],
+            price: parseFloat(cols[2]) || 0,
+            cal: parseFloat(cols[3]) || 0
+          };
+          if (catIndex >= 0 && catIndex < 4) {
+            menuCategories[catIndex].push(item);
+          }
         }
+      }
+    }
 
-        // 自動加載 Google 試算表資料
-        async function loadMenuData() {
-            try {
-                let response = await fetch(SHEET_CSV_URL);
-                let data = await response.text();
-                let rows = parseCSV(data);
+    // 隨機抽取某個分類
+    function getRandomItem(catIndex) {
+      const list = menuCategories[catIndex];
+      if (!list || list.length === 0) {
+        return { name: '無資料', price: 0, cal: 0 };
+      }
+      return list[Math.floor(Math.random() * list.length)];
+    }
 
-                let baseHTML = '';
-                let proteinHTML = '';
-                let sauceHTML = '';
-                let pickleHTML = '';
-                let drinkHTML = '';
+    // 單項抽取
+    function drawSingle(index) {
+      const item = getRandomItem(index);
+      selectedItems[index] = item;
+      updateUI(index);
+      updateTotals();
 
-                rows.forEach(row => {
-                    // 假設試算表欄位格式為: [類別(category), 名稱(name), 價格(price)]
-                    // 類別包括: base, protein, sauce, pickle, drink
-                    let category = row[0];
-                    let name = row[1];
-                    let price = row[2] ? parseFloat(row[2]) : 0;
+      // 卡片動畫
+      const card = document.getElementById(`card-${index}`);
+      card.classList.remove('shake');
+      void card.offsetWidth; // trigger reflow
+      card.classList.add('shake');
+    }
 
-                    if (category === 'base') {
-                        // 判斷對應圖片
-                        let img = name.includes('三文治') ? 'image_3.png' : 'image_2.png';
-                        baseHTML += `
-                            <div class="option-card" onclick="selectBase('${name}', ${price}, this)">
-                                <img src="${img}" alt="${name}">
-                                <h4>${name}</h4>
-                                <div class="price">$${price}</div>
-                            </div>
-                        `;
-                    } else if (category === 'protein') {
-                        proteinHTML += `<div class="list-item" onclick="selectSingle('protein', '${name}', this)">${name}</div>`;
-                    } else if (category === 'sauce') {
-                        sauceHTML += `<div class="list-item" onclick="selectSingle('sauce', '${name}', this)">${name}</div>`;
-                    } else if (category === 'pickle') {
-                        pickleHTML += `<div class="list-item" onclick="selectSingle('pickle', '${name}', this)">${name}</div>`;
-                    } else if (category === 'drink') {
-                        drinkHTML += `<div class="list-item" onclick="selectSingle('drink', '${name}', this)">${name}</div>`;
-                    }
-                });
+    // 一鍵全抽
+    function drawAll() {
+      for (let i = 0; i < 4; i++) {
+        drawSingle(i);
+      }
+    }
 
-                document.getElementById('base-container').innerHTML = baseHTML || '<div>暫無資料</div>';
-                document.getElementById('protein-container').innerHTML = proteinHTML || '<div>暫無資料</div>';
-                document.getElementById('sauce-container').innerHTML = sauceHTML || '<div>暫無資料</div>';
-                document.getElementById('pickle-container').innerHTML = pickleHTML || '<div>暫無資料</div>';
-                document.getElementById('drink-container').innerHTML = drinkHTML || '<div>暫無資料</div>';
+    // 更新介面內容
+    function updateUI(index) {
+      const item = selectedItems[index];
+      if (!item) return;
 
-            } catch (error) {
-                console.error('無法載入試算表資料:', error);
-                document.getElementById('summary-items-list').innerHTML = '<div style="color:red;">載入菜單失敗，請檢查網絡或 CSV 連結。</div>';
-            }
+      document.getElementById(`val-${index}`).innerText = item.name;
+      document.getElementById(`meta-${index}`).innerText = `💰 $${item.price} | 🔥 ${item.cal} kcal`;
+
+      // 特殊邏輯：第一行根據名稱顯示三文治或薯卷圖片
+      if (index === 0) {
+        const imgEl = document.getElementById('item1-img');
+        if (item.name.includes('三文治') || item.name.includes('Sandwich')) {
+          imgEl.src = SANDWICH_IMG;
+          imgEl.style.display = 'block';
+        } else if (item.name.includes('薯卷') || item.name.includes('Roll')) {
+          imgEl.src = POTATO_ROLL_IMG;
+          imgEl.style.display = 'block';
+        } else {
+          imgEl.style.display = 'none'; // 若不是這兩者則隱藏圖片
         }
+      }
+    }
 
-        function selectBase(name, price, element) {
-            document.querySelectorAll('.option-card').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            currentOrder.base = name;
-            currentOrder.price = price;
-            updateSummary();
+    // 更新右上角總價錢與總卡路里
+    function updateTotals() {
+      let totalPrice = 0;
+      let totalCal = 0;
+
+      selectedItems.forEach(item => {
+        if (item) {
+          totalPrice += item.price;
+          totalCal += item.cal;
         }
+      });
 
-        function selectSingle(category, name, element) {
-            const parent = element.parentElement;
-            parent.querySelectorAll('.list-item').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            currentOrder[category] = name;
-            updateSummary();
-        }
+      document.getElementById('total-price').innerText = totalPrice;
+      document.getElementById('total-cal').innerText = totalCal;
+    }
 
-        function updateSummary() {
-            const listContainer = document.getElementById('summary-items-list');
-            const priceContainer = document.getElementById('total-price');
-            
-            let html = '';
-            if (currentOrder.base) html += `<div>• <b>${currentOrder.base}</b></div>`;
-            if (currentOrder.protein) html += `<div>• 蛋白質: ${currentOrder.protein}</div>`;
-            if (currentOrder.sauce) html += `<div>• 醬汁: ${currentOrder.sauce}</div>`;
-            if (currentOrder.pickle) html += `<div>• 醃菜: ${currentOrder.pickle}</div>`;
-            if (currentOrder.drink) html += `<div>• 飲品: ${currentOrder.drink}</div>`;
-
-            if (html === '') {
-                html = '<div>請選擇你的餐點...</div>';
-            }
-
-            listContainer.innerHTML = html;
-            priceContainer.innerText = `$${currentOrder.price}`;
-        }
-
-        function submitOrder() {
-            if (!currentOrder.base) {
-                alert('請先選擇你的特色外層！');
-                return;
-            }
-            alert(`多謝惠顧！你的餐點已成功記錄，總共 $${currentOrder.price}。`);
-        }
-
-        // 頁面載入時自動拉取試算表
-        window.onload = loadMenuData;
-    </script>
+    // 啟動
+    window.onload = loadData;
+  </script>
 </body>
 </html>
