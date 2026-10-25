@@ -121,7 +121,6 @@
       margin-top: 1px;
     }
 
-    /* 用家自定義圖片區塊 */
     .food-img {
       width: 40px;
       height: 40px;
@@ -147,7 +146,6 @@
       background-color: #E0E0E0;
     }
 
-    /* 額外飲品勾選區塊 */
     .drink-section {
       background: var(--card-bg);
       border-radius: 10px;
@@ -268,16 +266,17 @@
   </div>
 
   <script>
+    // 已將你提供的 pubhtml 網址轉為可讀取的 CSV 網址
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTS5gg8oBHWFkx3TZvmsW4BXNdQQbeOcDLBcYVL-N6qAx9m7ZKX7ysOjyQPEyPp1SF7np8IQ_fy2Lgg/pub?output=csv';
 
-    // 🖼️【你可以在這裡自訂你的圖片網址或檔案路徑】
+    // 對應你在 GitHub 上傳的兩張圖片
     const IMAGE_CONFIG = {
-      sandwich: './OME.png',   // 三文治圖片檔名
-      potatoRoll: './ROLL.png' // 薯卷圖片檔名
+      sandwich: './OME.png',   // 三文治對應 OME.png
+      potatoRoll: './ROLL.png' // 薯卷對應 ROLL.png
     };
 
-    let menuCategories = [[], [], [], []]; // 0:三文治/薯卷, 1:蛋白質, 2:醬汁, 3:醃菜
-    let drinksList = []; // 飲品清單
+    let menuCategories = [[], [], [], []]; 
+    let drinksList = []; 
     let selectedItems = [null, null, null, null];
 
     async function loadData() {
@@ -289,7 +288,7 @@
         drawAll(); 
       } catch (error) {
         console.error('Data load error:', error);
-        document.getElementById('loading').innerText = '❌ 載入失敗，請檢查試算表權限';
+        document.getElementById('loading').innerText = '❌ 載入失敗，請確認 Google 試算表發布權限';
       }
     }
 
@@ -313,7 +312,6 @@
           if (catIndex >= 0 && catIndex <= 3) {
             menuCategories[catIndex].push(item);
           } else if (catIndex === 4) {
-            // 分類 4 代表飲品
             drinksList.push(item);
           }
         }
@@ -321,7 +319,6 @@
       renderDrinks();
     }
 
-    // 渲染飲品剔選框
     function renderDrinks() {
       const container = document.getElementById('drink-container');
       container.innerHTML = '';
@@ -372,7 +369,6 @@
       document.getElementById(`val-${index}`).innerText = item.name;
       document.getElementById(`meta-${index}`).innerText = `💰 $${item.price} | 🔥 ${item.cal} kcal`;
 
-      // 第一行特色三文治/薯卷圖片判斷與顯示
       if (index === 0) {
         const imgEl = document.getElementById('item1-img');
         if (item.name.includes('三文治') || item.name.toLowerCase().includes('sandwich')) {
@@ -382,7 +378,7 @@
           imgEl.src = IMAGE_CONFIG.potatoRoll;
           imgEl.style.display = 'block';
         } else {
-          imgEl.style.display = 'none'; // 若不是這兩者則隱藏
+          imgEl.style.display = 'none';
         }
       }
     }
@@ -391,15 +387,13 @@
       let totalPrice = 0;
       let totalCal = 0;
 
-      // 計算抽中的 4 項
       selectedItems.forEach(item => {
         if (item) {
           totalPrice += item.price;
-          totalCal += item.cal; // 只有這四項計算卡路里
+          totalCal += item.cal;
         }
       });
 
-      // 計算勾選的飲品（飲品不計算卡路里）
       const checkboxes = document.querySelectorAll('.drink-options input[type="checkbox"]:checked');
       checkboxes.forEach(chk => {
         const drinkIndex = parseInt(chk.value);
