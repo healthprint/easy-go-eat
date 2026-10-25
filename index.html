@@ -266,13 +266,12 @@
   </div>
 
   <script>
-    // 已將你提供的 pubhtml 網址轉為可讀取的 CSV 網址
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTS5gg8oBHWFkx3TZvmsW4BXNdQQbeOcDLBcYVL-N6qAx9m7ZKX7ysOjyQPEyPp1SF7np8IQ_fy2Lgg/pub?output=csv';
 
-    // 對應你在 GitHub 上傳的兩張圖片
+    // 對應 GitHub 上的圖片
     const IMAGE_CONFIG = {
-      sandwich: './OME.png',   // 三文治對應 OME.png
-      potatoRoll: './ROLL.png' // 薯卷對應 ROLL.png
+      sandwich: './OME.png',   
+      potatoRoll: './ROLL.png' 
     };
 
     let menuCategories = [[], [], [], []]; 
@@ -299,19 +298,27 @@
       menuCategories = [[], [], [], []];
       drinksList = [];
 
+      // 從第 2 行開始（自動跳過標題行 Category, Item Name...）
       for (let i = 1; i < lines.length; i++) {
         const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
         if (cols.length >= 4) {
-          const catIndex = parseInt(cols[0]); 
+          const categoryName = cols[0]; // A 欄文字分類
           const item = {
             name: cols[1],
             price: parseFloat(cols[2]) || 0,
             cal: parseFloat(cols[3]) || 0
           };
 
-          if (catIndex >= 0 && catIndex <= 3) {
-            menuCategories[catIndex].push(item);
-          } else if (catIndex === 4) {
+          // 根據你試算表裏的文字進行分類對應
+          if (categoryName.includes('三文治') || categoryName.includes('薯卷')) {
+            menuCategories[0].push(item);
+          } else if (categoryName.includes('蛋白質')) {
+            menuCategories[1].push(item);
+          } else if (categoryName.includes('醬汁')) {
+            menuCategories[2].push(item);
+          } else if (categoryName.includes('醃菜') || categoryName.includes('特式醃菜')) {
+            menuCategories[3].push(item);
+          } else if (categoryName.includes('飲品') || categoryName.includes('追加飲品')) {
             drinksList.push(item);
           }
         }
@@ -339,7 +346,7 @@
     function getRandomItem(catIndex) {
       const list = menuCategories[catIndex];
       if (!list || list.length === 0) {
-        return { name: '無資料', price: 0, cal: 0 };
+        return { name: '該分類無資料', price: 0, cal: 0 };
       }
       return list[Math.floor(Math.random() * list.length)];
     }
@@ -369,6 +376,7 @@
       document.getElementById(`val-${index}`).innerText = item.name;
       document.getElementById(`meta-${index}`).innerText = `💰 $${item.price} | 🔥 ${item.cal} kcal`;
 
+      // 檢查第一行三文治/薯卷圖片顯示
       if (index === 0) {
         const imgEl = document.getElementById('item1-img');
         if (item.name.includes('三文治') || item.name.toLowerCase().includes('sandwich')) {
@@ -390,10 +398,11 @@
       selectedItems.forEach(item => {
         if (item) {
           totalPrice += item.price;
-          totalCal += item.cal;
+          totalCal += item.cal; // 只有 4 大主項目計算卡路里
         }
       });
 
+      // 飲品只加價，不計入卡路里
       const checkboxes = document.querySelectorAll('.drink-options input[type="checkbox"]:checked');
       checkboxes.forEach(chk => {
         const drinkIndex = parseInt(chk.value);
